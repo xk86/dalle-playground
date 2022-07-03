@@ -4,3 +4,4 @@
 /backend/__pycache__
 /interface/node_modules
 /interface/build
+/interface/package-lock.json

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import withStyles from "@material-ui/core/styles/withStyles";
 import {
     Card, CardContent, FormControl, FormHelperText,
-    InputLabel, MenuItem, Select, Typography
+    InputLabel, MenuItem, Select, Typography, Slider
 } from "@material-ui/core";
 import { callDalleService } from "./backend_api";
 import GeneratedImageList from "./GeneratedImageList";
@@ -45,6 +45,9 @@ const useStyles = () => ({
     imagesPerQueryControl: {
         marginTop: '20px',
     },
+    paramControl: {
+        marginTop: '20px'
+    },
     formControl: {
         margin: "20px",
         minWidth: 120,
@@ -74,17 +77,25 @@ const App = ({ classes }) => {
     const [generatedImagesFormat, setGeneratedImagesFormat] = useState('jpeg');
 
     const [apiError, setApiError] = useState('')
+    // generation options
     const [imagesPerQuery, setImagesPerQuery] = useState(2);
+    const [topK, setTopK] = useState(0.8);
+    const [topP, setTopP] = useState(0.9);
+    const [temperature, setTemperature] = useState(0.8);
+    const [condScale, setCondScale] = useState(10.0);
+
     const [queryTime, setQueryTime] = useState(0);
 
     const imagesPerQueryOptions = 10
+    const lowValSliderOptions = [0.0, 1.5, 0.01] // min,max,step; used for topK, topP, temperature
+    const highValSliderOptions = [0.0, 50., 0.1] // used for condScale
     const validBackendUrl = isValidBackendEndpoint && backendUrl
 
     function enterPressedCallback(promptText) {
         console.log('API call to DALL-E web service with the following prompt [' + promptText + ']');
         setApiError('')
         setIsFetchingImgs(true)
-        callDalleService(backendUrl, promptText, imagesPerQuery).then((response) => {
+        callDalleService(backendUrl, promptText, imagesPerQuery, topK, topP, temperature).then((response) => {
             setQueryTime(response['executionTime'])
             setGeneratedImages(response['serverResponse']['generatedImgs'])
             setGeneratedImagesFormat(response['serverResponse']['generatedImgsFormat'])
@@ -169,6 +180,68 @@ const App = ({ classes }) => {
                                     })}
                                 </Select>
                                 <FormHelperText>More images = More time to generate</FormHelperText>
+                            </FormControl>
+                            <FormControl className={classes.paramControl}
+                                variant="outlined">
+                                <InputLabel id="top-k-label">
+                                  TopK
+                                </InputLabel>
+                                <Slider labelId = "top-k-label"
+                                    label="Top K: "
+                                    disabled={isFetchingImgs}
+                                    onChange={(e, v) => setTopK(v)}
+                                    valueLabelDisplay="auto"
+                                    min={lowValSliderOptions[0]}
+                                    max={lowValSliderOptions[1]}
+                                    step={lowValSliderOptions[2]}
+                                value={topK}
+                                />
+                                <FormHelperText>Top K Generation Parameter</FormHelperText>
+                            </FormControl>
+                            <FormControl className={classes.paramControl}
+                                variant="outlined">
+                                <InputLabel id="top-p-label">
+                                  TopP: {topP}
+                                </InputLabel>
+                                <Slider labelId = "top-p-label"
+                                    label="Top P: " value={topP}
+                                    disabled={isFetchingImgs}
+                                    onChange={(e, v) => setTopP(v)}
+                                    valueLabelDisplay="auto"
+                                    min={lowValSliderOptions[0]}
+                                    max={lowValSliderOptions[1]}
+                                    step={lowValSliderOptions[2]}/>
+                                <FormHelperText>Top P Generation Parameter</FormHelperText>
+                            </FormControl>
+                            <FormControl className={classes.paramControl}
+                                variant="outlined">
+                                <InputLabel id="temperature-label">
+                                  Temperature: {temperature}
+                                </InputLabel>
+                                <Slider labelId = "temperature-label"
+                                    label="Temperature: " value={temperature}
+                                    disabled={isFetchingImgs}
+                                    onChange={(e, v) => setTemperature(v)}
+                                    valueLabelDisplay="auto"
+                                    min={lowValSliderOptions[0]}
+                                    max={lowValSliderOptions[1]}
+                                    step={lowValSliderOptions[2]}/>
+                                <FormHelperText>Temperature Generation Parameter</FormHelperText>
+                            </FormControl>
+                            <FormControl className={classes.paramControl}
+                                variant="outlined">
+                                <InputLabel id="cond-scale-label">
+                                  Cond Scale: {condScale}
+                                </InputLabel>
+                                <Slider labelId = "cond-scale-label"
+                                    label="Cond scale: " value={condScale}
+                                    disabled={isFetchingImgs}
+                                    onChange={(e, v) => setCondScale(v)}
+                                    valueLabelDisplay="auto"
+                                    min={highValSliderOptions[0]}
+                                    max={highValSliderOptions[1]}
+                                    step={highValSliderOptions[2]}/>
+                                <FormHelperText>Cond Scale Generation Parameter</FormHelperText>
                             </FormControl>
                         </CardContent>
                     </Card>

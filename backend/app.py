@@ -32,7 +32,11 @@ def generate_images_api():
     json_data = request.get_json(force=True)
     text_prompt = json_data["text"]
     num_images = json_data["num_images"]
-    generated_imgs = dalle_model.generate_images(text_prompt, num_images)
+    top_k = json_data["top_k"]
+    top_p = json_data["top_p"]
+    temperature = json_data["temperature"]
+    cond_scale = json_data["cond_scale"]
+    generated_imgs = dalle_model.generate_images(text_prompt, num_images, top_k, top_p, temperature, cond_scale)
 
     returned_generated_images = []
     if args.save_to_disk: 

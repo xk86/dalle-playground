@@ -78,7 +78,7 @@ class DalleModel:
         return replicate(tokenized_prompt)
 
 
-    def generate_images(self, prompt: str, num_predictions: int):
+    def generate_images(self, prompt: str, num_predictions: int, top_k: float, top_p: float, temperature: float, cond_scale: float):
         tokenized_prompt = self.tokenize_prompt(prompt)
 
         # create a random key
@@ -95,10 +95,10 @@ class DalleModel:
                 tokenized_prompt,
                 shard_prng_key(subkey),
                 self.params,
-                GEN_TOP_K,
-                GEN_TOP_P,
-                TEMPERATURE,
-                COND_SCALE,
+                top_k,
+                top_p,
+                temperature,
+                cond_scale,
                 self.model
             )
 

@@ -9,7 +9,7 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS, cross_origin
 from consts import DEFAULT_IMG_OUTPUT_DIR
 from utils import parse_arg_boolean, parse_arg_dalle_version
-from consts import ModelSize
+from consts import ModelSize, GEN_TOP_K, GEN_TOP_P, TEMPERATURE, COND_SCALE
 
 app = Flask(__name__)
 CORS(app)
@@ -67,7 +67,7 @@ def health_check():
 
 with app.app_context():
     dalle_model = DalleModel(args.model_version)
-    dalle_model.generate_images("warm-up", 1)
+    dalle_model.generate_images("warm-up", 1, GEN_TOP_K, GEN_TOP_P, TEMPERATURE, COND_SCALE)
     print("--> DALL-E Server is up and running!")
     print(f"--> Model selected - DALL-E {args.model_version}")
 

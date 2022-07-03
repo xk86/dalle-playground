@@ -2,7 +2,7 @@ import JsonBigint from "json-bigint";
 
 const REQUEST_TIMEOUT_SEC = 60000
 
-export async function callDalleService(backendUrl, text, numImages, topK, topP, temperature) {
+export async function callDalleService(backendUrl, text, numImages, topK, topP, temperature, cond_scale) {
     const queryStartTime = new Date()
     const response = await Promise.race([
         (await fetch(backendUrl + `/dalle`, {
@@ -16,6 +16,7 @@ export async function callDalleService(backendUrl, text, numImages, topK, topP, 
                     'top_k': topK,
                     'top_p': topP,
                     'temperature': temperature,
+                    'cond_scale': cond_scale
                 })
             }
         ).then((response) => {

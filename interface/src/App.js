@@ -79,7 +79,7 @@ const App = ({ classes }) => {
     const [apiError, setApiError] = useState('')
     // generation options
     const [imagesPerQuery, setImagesPerQuery] = useState(2);
-    const [topK, setTopK] = useState(0.8);
+    const [topK, setTopK] = useState(80);
     const [topP, setTopP] = useState(0.9);
     const [temperature, setTemperature] = useState(0.8);
     const [condScale, setCondScale] = useState(10.0);
@@ -88,6 +88,7 @@ const App = ({ classes }) => {
 
     const imagesPerQueryOptions = 10
     const lowValSliderOptions = [0.0, 1.5, 0.01] // min,max,step; used for topK, topP, temperature
+    const topKSliderOptions = [0, 100, 1]
     const highValSliderOptions = [0.0, 50., 0.1] // used for condScale
     const validBackendUrl = isValidBackendEndpoint && backendUrl
 
@@ -95,7 +96,7 @@ const App = ({ classes }) => {
         console.log('API call to DALL-E web service with the following prompt [' + promptText + ']');
         setApiError('')
         setIsFetchingImgs(true)
-        callDalleService(backendUrl, promptText, imagesPerQuery, topK, topP, temperature).then((response) => {
+        callDalleService(backendUrl, promptText, imagesPerQuery, topK, topP, temperature, condScale).then((response) => {
             setQueryTime(response['executionTime'])
             setGeneratedImages(response['serverResponse']['generatedImgs'])
             setGeneratedImagesFormat(response['serverResponse']['generatedImgsFormat'])
@@ -184,16 +185,16 @@ const App = ({ classes }) => {
                             <FormControl className={classes.paramControl}
                                 variant="outlined">
                                 <InputLabel id="top-k-label">
-                                  TopK
+                                  TopK: {topK}
                                 </InputLabel>
                                 <Slider labelId = "top-k-label"
                                     label="Top K: "
                                     disabled={isFetchingImgs}
                                     onChange={(e, v) => setTopK(v)}
                                     valueLabelDisplay="auto"
-                                    min={lowValSliderOptions[0]}
-                                    max={lowValSliderOptions[1]}
-                                    step={lowValSliderOptions[2]}
+                                    min={topKSliderOptions[0]}
+                                    max={topKSliderOptions[1]}
+                                    step={topKSliderOptions[2]}
                                 value={topK}
                                 />
                                 <FormHelperText>Top K Generation Parameter</FormHelperText>
